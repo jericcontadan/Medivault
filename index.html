@@ -1,55 +1,405 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MediVault — Health Records System</title>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MediVault — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+    --primary: #F8F9FA;
+    --accent: #D4AF37;
+    --bg: #0D1B2A;
+    --card-bg: rgba(255,255,255,0.18);
+    --text: #F8F9FA;
+    --muted: rgba(248,249,250,0.7);
+}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+    color: var(--primary);
+}
+.brand {
+    text-align: center;
+    margin-bottom: 12px;
+}
+.brand .logo {
+    font-size: 36px;
+    color: var(--accent);
+}
+.brand .bname {
+    font-family: 'Merriweather', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: block;
+    margin-top: 4px;
+}
+.tagline {
+    font-size: .85rem;
+    color: var(--muted);
+    margin-bottom: 24px;
+    line-height: 1.4;
+}
+.tabs {
+    display: flex;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+    border-radius: 6px 6px 0 0;
+}
+.tab {
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+    font-family: 'Merriweather', serif;
+    font-size: .9rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color .2s, background .2s, border-bottom .2s;
+    background: transparent;
+}
+.tab.on {
+    color: var(--accent);
+    background: var(--bg);
+    border-bottom: 2px solid var(--accent);
+}
+.panel {
+    display: none;
+}
+.panel.on {
+    display: block;
+}
+/* role selection cards */
 
-  <!-- Google Fonts -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Fraunces:ital,wght@0,400;0,600;1,400&display=swap"
-    rel="stylesheet"
-  >
+/* session prompt overlay */
+#session-prompt {position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:2;opacity:0;transition:opacity .3s ease;}
+#session-prompt.show {opacity:1;}
+#session-prompt .prompt-box {background: var(--panel);padding:22px 28px;border-radius:12px;text-align:center;max-width:320px;box-shadow:0 12px 32px rgba(0,0,0,.4);transform:translateY(20px);transition:transform .3s ease;color:var(--primary);}
+#session-prompt.show .prompt-box {transform:translateY(0);}
+#session-prompt .prompt-box p {margin-bottom:14px;font-size:.92rem;color:var(--primary);}
+#session-prompt .prompt-box .btn-main {width:100%;margin-top:6px;}
+#session-prompt .prompt-box .continue-btn {background: var(--accent);color: var(--bg);}
+#session-prompt .prompt-box .profile-btn {background: var(--bg);color: var(--accent);border:1px solid var(--accent);}
+#session-prompt .prompt-box .logout-btn {background: var(--danger);color: var(--primary);}
 
-  <!-- MediVault Styles -->
-  <link rel="stylesheet" href="css/styles.css">
-
-  <!-- Chart.js for data visualization -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- PDF generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <!-- Speech recognition for voice commands -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/speech-recognition/1.0.0/speech-recognition.min.js"></script>
-
-  <!-- Speech synthesis polyfill for voice responses -->
-  <script src="https://cdn.jsdelivr.net/npm/speech-synthesis-polyfill@1.0.0/dist/speech-synthesis-polyfill.min.js"></script>
-
+/* role selection cards */
+.role-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.role-card {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+}
+.role-card.selected {
+    border-color: var(--accent);
+    background: rgba(212,175,55,.12);
+    position: relative;
+}
+.light .role-card.selected {
+    background: rgba(212,175,55,.08);
+}
+.role-card.selected::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    background: var(--accent);
+}
+.role-card:hover {
+    border-color: var(--accent);
+}
+.role-card .ri {
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+.role-card .rn {
+    font-family: 'Merriweather', serif;
+    font-weight: 700;
+    color: var(--text);
+}
+.role-card .rs {
+    font-size: .75rem;
+    color: var(--muted);
+    margin-top: 2px;
+}
+.fld {
+    margin-bottom: 16px;
+}
+.fld label {
+    display: block;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 6px;
+}
+.iw {
+    position: relative;
+}
+.iw .ic {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: var(--muted);
+    pointer-events: none;
+}
+.iw input {
+    width: 100%;
+    padding: 10px 12px 10px 34px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: .9rem;
+    color: var(--text);
+    background: var(--card);
+    transition: border-color .2s, box-shadow .2s;
+}
+.iw input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(44,62,80,.15);
+    /* keep the dark card background so text remains visible */
+    background: var(--card);
+    color: var(--text);
+}
+.forgot {
+    display: block;
+    text-align: right;
+    font-size: .75rem;
+    color: var(--accent);
+    margin-top: 4px;
+    text-decoration: none;
+}
+.btn-main {
+    width: 100%;
+    margin-top: 18px;
+    padding: 12px;
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    color: var(--bg);
+    font-family: 'Playfair Display', serif;
+    font-size: .93rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s, transform .15s;
+}
+.btn-main:hover {
+    background: rgba(212,175,55,.9);
+    transform: translateY(-2px);
+}
+.msg {
+    font-size: .78rem;
+    padding: 9px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    display: none;
+}
+.msg.err {
+    background: rgba(255,77,109,.1);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+}
+.msg.ok {
+    background: rgba(0,214,143,.1);
+    border: 1px solid var(--success);
+    color: var(--success);
+}
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0 18px;
+    color: #bbb;
+    font-size: .78rem;
+}
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #ddd;
+}
+.socials {
+    display: none; /* hide for cleaner look */
+}
+.demo-hint,
+.feature-row {
+    display: none;
+}
+</style>
+</head>
 <body>
+<div class="card">
+  <div class="brand"><div class="logo">MV</div><span class="bname">MediVault</span></div>
+  <p class="tagline">Hospital‑agnostic health records for every Filipino.<br>Your records, your control — anywhere in the Philippines.</p>
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('login')">Login</button>
+    <button class="tab" onclick="switchTab('register')">Register</button>
+  </div>
 
-  <!-- Root mount point — all UI is injected here by app.js -->
-  <div id="root"></div>
+  <!-- LOGIN -->
+  <div class="panel on" id="panel-login">
+    <div class="msg err" id="login-err"></div>
+    <div class="fld"><label>Email</label>
+      <div class="iw"><i data-lucide="mail" class="ic"></i><input type="email" id="l-email" placeholder="your@email.com" autocomplete="email"/></div>
+    </div>
+    <div class="fld"><label>Password</label>
+      <div class="iw"><i data-lucide="lock" class="ic"></i><input type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password"/></div>
+      <a class="forgot" href="#">Forgot password?</a>
+    </div>
+    <button class="btn-main" id="login-btn" onclick="doLogin()">LOGIN</button>
+    <div class="divider">Or sign in using</div>
+    <div class="socials">
+      <button class="sbtn fb">f</button>
+      <button class="sbtn tw">🐦</button>
+      <button class="sbtn ggl">G</button>
+    </div>
+    <div class="demo-hint">
+      <strong><i data-lucide="test-tube" class="icon-inline"></i> Demo — click to fill credentials</strong>
+      Patient: <span class="ql" onclick="fill('patient')">patient@demo.com / password123</span><br/>
+      Doctor:&nbsp; <span class="ql" onclick="fill('doctor')">doctor@demo.com / password123</span>
+    </div>
+  </div>
 
-  <!--
-    Script load order matters:
-      1. db.js            — data store (must be first, referenced by everything)
-      2. icons.js         — SVG helpers (referenced by app shell renderer)
-      3. api.js           — API client (required before auth.js)
-      4. auth.js          — login / register (references API, render, v)
-      5. modals.js        — modal renderers & save actions (references DB, state)
-      6. pages-patient.js — patient page renderers (references DB, state, helpers)
-      7. pages-doctor.js  — doctor page renderers (references DB, state, helpers)
-      8. app.js           — entry point: state, render engine, boot (must be last)
-  -->
-  <script src="js/db.js"></script>
-  <script src="js/icons.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/modals.js"></script>
-  <script src="js/pages-patient.js"></script>
-  <script src="js/pages-doctor.js"></script>
-  <script src="js/app.js"></script>
+  <!-- REGISTER -->
+  <div class="panel" id="panel-register">
+    <div class="msg err" id="reg-err"></div>
+    <div class="msg ok" id="reg-ok"></div>
+    <div class="role-row">
+      <div class="role-card selected" id="role-patient" onclick="selectRole('patient')" role="radio" aria-checked="true" tabindex="0">
+        <div class="ri"><i data-lucide="user" class="icon-inline"></i></div><div class="rn">Patient</div><div class="rs">Manage your health records</div>
+      </div>
+      <div class="role-card" id="role-doctor" onclick="selectRole('doctor')" role="radio" aria-checked="false" tabindex="0">
+        <div class="ri"><i data-lucide="stethoscope" class="icon-inline"></i></div><div class="rn">Doctor</div><div class="rs">Access & consult patients</div>
+      </div>
+    </div>
+    <input type="hidden" id="r-role" value="patient"/>
+    <div class="fld"><label>Full Name</label>
+      <div class="iw"><i data-lucide="user" class="ic"></i><input type="text" id="r-name" placeholder="Juan dela Cruz"/></div>
+    </div>
+    <div class="fld"><label>Email</label>
+      <div class="iw"><i data-lucide="mail" class="ic"></i><input type="email" id="r-email" placeholder="your@email.com"/></div>
+    </div>
+    <div class="fld"><label>Password</label>
+      <div class="iw"><i data-lucide="lock" class="ic"></i><input type="password" id="r-pass" placeholder="Min. 6 characters"/></div>
+    </div>
+    <div class="fld"><label>Confirm Password</label>
+      <div class="iw"><i data-lucide="lock" class="ic"></i><input type="password" id="r-pass2" placeholder="Repeat password"/></div>
+    </div>
+    <button class="btn-main" id="reg-btn" onclick="doRegister()">CREATE ACCOUNT</button>
+    <div class="feature-row">
+      <div class="feat"><i data-lucide="home" class="icon-inline"></i> Hospital-agnostic</div>
+      <div class="feat"><i data-lucide="lock" class="icon-inline"></i> Patient-controlled</div>
+      <div class="feat"><i data-lucide="bar-chart-2" class="icon-inline"></i> Trend analytics</div>
+      <div class="feat"><i data-lucide="flag" class="icon-inline"></i> Made for Filipinos</div>
+    </div>
+  </div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/lucide.min.js"></script>
+<script src="js/db.js"></script>
+<script>
+(function(){
+  const s = DB.getSession();
+  if (s && s.user_id) {
+    // show prompt instead of immediate redirect
+    const container = document.createElement('div');
+    container.id = 'session-prompt';
+    container.innerHTML = `
+      <div class="prompt-box">
+        <p>You are already logged in as <strong>${s.user_name}</strong>.</p>
+        <button id="continue-btn" class="btn-main continue-btn">Continue to dashboard</button>
+        <button id="profile-btn" class="btn-main profile-btn" style="margin-top:8px;">My Profile</button>
+        <button id="logout-btn" class="btn-main logout-btn" style="margin-top:8px;">Logout</button>
+      </div>`;
+    document.body.appendChild(container);
+    // trigger fade and slide
+    requestAnimationFrame(()=>container.classList.add('show'));
+    document.getElementById('continue-btn').onclick = () => go(s.role);
+    document.getElementById('profile-btn').onclick = () => { window.location.href = s.role==='doctor' ? 'pages/doctor/profile.html' : 'pages/patient/profile.html'; };
+    document.getElementById('logout-btn').onclick = () => { DB.clearSession(); location.reload(); };
+    return;
+  }
+})();
+// create lucide icons
+if(window.lucide) lucide.createIcons();
+function go(r){location.href=r==='doctor'?'pages/doctor/dashboard.html':'pages/patient/profile.html';}
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',(i===0&&t==='login')||(i===1&&t==='register')));
+  document.getElementById('panel-login').classList.toggle('on',t==='login');
+  document.getElementById('panel-register').classList.toggle('on',t==='register');
+  ['login-err','reg-err','reg-ok'].forEach(id=>{document.getElementById(id).style.display='none';});
+}
+function selectRole(r){
+  document.getElementById('r-role').value=r;
+  document.getElementById('role-patient').classList.toggle('selected',r==='patient');
+  document.getElementById('role-doctor').classList.toggle('selected',r==='doctor');
+}
+function msg(id,txt,type='err'){const e=document.getElementById(id);e.textContent=txt;e.className='msg '+type;e.style.display='block';}
+function fill(r){document.getElementById('l-email').value=r==='doctor'?'doctor@demo.com':'patient@demo.com';document.getElementById('l-pass').value='password123';}
+function doLogin(){
+  document.getElementById('login-err').style.display='none';
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  if(!email||!pass){msg('login-err','<i data-lucide="alert-triangle" class="icon-inline"></i> Please fill in all fields.');return;}
+  const btn=document.getElementById('login-btn');btn.disabled=true;btn.textContent='Logging in…';
+  setTimeout(()=>{
+    const res=DB.login(email,pass);btn.disabled=false;btn.textContent='LOGIN';
+    if(!res.ok){msg('login-err','❌ '+res.msg);return;}
+    DB.setSession(res.user);go(res.user.role);
+  },380);
+}
+function doRegister(){
+  ['reg-err','reg-ok'].forEach(id=>{document.getElementById(id).style.display='none';});
+  const name=document.getElementById('r-name').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  const pass=document.getElementById('r-pass').value;
+  const pass2=document.getElementById('r-pass2').value;
+  const role=document.getElementById('r-role').value;
+  if(!name||!email||!pass||!pass2){msg('reg-err','<i data-lucide="alert-triangle" class="icon-inline"></i> Please fill in all fields.');return;}
+  if(!email.includes('@')){msg('reg-err','<i data-lucide="alert-triangle" class="icon-inline"></i> Invalid email address.');return;}
+  if(pass!==pass2){msg('reg-err','<i data-lucide="alert-triangle" class="icon-inline"></i> Passwords do not match.');return;}
+  if(pass.length<6){msg('reg-err','<i data-lucide="alert-triangle" class="icon-inline"></i> Password must be at least 6 characters.');return;}
+  const btn=document.getElementById('reg-btn');btn.disabled=true;btn.textContent='Creating account…';
+  setTimeout(()=>{
+    const res=DB.register(name,email,pass,role);btn.disabled=false;btn.textContent='CREATE ACCOUNT';
+    if(!res.ok){msg('reg-err','❌ '+res.msg);return;}
+    msg('reg-ok','✅ Account created! Redirecting…','ok');DB.setSession(res.user);
+    setTimeout(()=>go(res.user.role),800);
+  },380);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(document.getElementById('panel-login').classList.contains('on'))doLogin();else doRegister();}});
+</script>
 </body>
 </html>
